@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, Edit } from 'lucide-react';
 import { Membership } from '../../types';
 import Button from '../ui/Button';
 import { cn } from '../../lib/utils';
@@ -7,9 +7,10 @@ import { cn } from '../../lib/utils';
 interface MembershipCardProps {
   membership: Membership;
   isPopular?: boolean;
+  onEdit?: (membership: Membership) => void;
 }
 
-const MembershipCard: React.FC<MembershipCardProps> = ({ membership, isPopular = false }) => {
+const MembershipCard: React.FC<MembershipCardProps> = ({ membership, isPopular = false, onEdit }) => {
   return (
     <div className={cn(
       "relative rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md p-6 animate-enter",
@@ -51,8 +52,10 @@ const MembershipCard: React.FC<MembershipCardProps> = ({ membership, isPopular =
       <Button 
         variant={isPopular ? "primary" : "outline"} 
         className="w-full"
+        onClick={() => onEdit && onEdit(membership)}
+        leftIcon={<Edit size={16} />}
       >
-        Choose Plan
+        Edit Plan
       </Button>
     </div>
   );

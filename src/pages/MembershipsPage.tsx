@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/layout/PageHeader';
 import Button from '../components/ui/Button';
 import MembershipCard from '../components/membership/MembershipCard';
 import { memberships } from '../data/mockData';
+import { Membership } from '../types';
 
 const MembershipsPage: React.FC = () => {
+  const [editingMembership, setEditingMembership] = useState<Membership | null>(null);
+
+  const handleEdit = (membership: Membership) => {
+    setEditingMembership(membership);
+    // In a real app, this would navigate to an edit form or open a modal
+    console.log('Edit membership:', membership);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <PageHeader 
@@ -26,7 +35,8 @@ const MembershipsPage: React.FC = () => {
           <MembershipCard 
             key={membership.id} 
             membership={membership}
-            isPopular={idx === 1} // Make the Standard plan "popular"
+            isPopular={idx === 1}
+            onEdit={handleEdit}
           />
         ))}
       </div>

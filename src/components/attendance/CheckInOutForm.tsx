@@ -18,7 +18,8 @@ const CheckInOutForm: React.FC = () => {
         (member) =>
           member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          member.phone.includes(searchTerm)
+          member.phone.includes(searchTerm) ||
+          member.memberId.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(filtered);
     } else {
@@ -35,12 +36,10 @@ const CheckInOutForm: React.FC = () => {
   const handleCheckInOut = () => {
     if (!selectedMember || !mode) return;
 
-    // Here you would normally make an API call
     toast.success(
-      `${selectedMember.name} has been ${mode === 'check-in' ? 'checked in' : 'checked out'} successfully!`
+      `${selectedMember.name} (ID: ${selectedMember.memberId}) has been ${mode === 'check-in' ? 'checked in' : 'checked out'} successfully!`
     );
 
-    // Reset form
     setSelectedMember(null);
     setSearchTerm('');
     setMode(null);
@@ -88,7 +87,7 @@ const CheckInOutForm: React.FC = () => {
 
           <div className="relative">
             <Input
-              placeholder="Search member by name, email or phone..."
+              placeholder="Search by member ID or name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               leftIcon={<Search size={18} />}
@@ -96,7 +95,7 @@ const CheckInOutForm: React.FC = () => {
 
             {searchResults.length > 0 && (
               <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg max-h-60 overflow-auto ring-1 ring-black ring-opacity-5">
-                <ul className="py-1\" role="listbox">
+                <ul className="py-1" role="listbox">
                   {searchResults.map((member) => (
                     <li
                       key={member.id}
@@ -110,7 +109,9 @@ const CheckInOutForm: React.FC = () => {
                           className="h-8 w-8 rounded-full mr-3"
                         />
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{member.name}</p>
+                          <p className="text-sm font-medium text-gray-900">
+                            {member.name} <span className="text-gray-500">({member.memberId})</span>
+                          </p>
                           <p className="text-xs text-gray-500">{member.email}</p>
                         </div>
                       </div>
@@ -130,7 +131,12 @@ const CheckInOutForm: React.FC = () => {
                   className="h-12 w-12 rounded-full mr-4"
                 />
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">{selectedMember.name}</h3>
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {selectedMember.name}
+                    <span className="ml-2 text-sm text-gray-500">
+                      (ID: {selectedMember.memberId})
+                    </span>
+                  </h3>
                   <p className="text-sm text-gray-600">
                     {selectedMember.email} • {selectedMember.phone}
                   </p>

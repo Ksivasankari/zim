@@ -23,6 +23,18 @@ const DueDatesPage: React.FC = () => {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
 
+  const getStatusBadgeVariant = (daysLeft: number) => {
+    if (daysLeft <= 0) return 'danger';
+    if (daysLeft <= 30) return 'warning';
+    return 'success';
+  };
+
+  const getStatusText = (daysLeft: number) => {
+    if (daysLeft <= 0) return 'Expired';
+    if (daysLeft <= 30) return 'Upcoming';
+    return 'Active';
+  };
+
   return (
     <div>
       <PageHeader 
@@ -92,10 +104,8 @@ const DueDatesPage: React.FC = () => {
                       {daysLeft} days
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge
-                        variant={daysLeft <= 7 ? 'danger' : daysLeft <= 30 ? 'warning' : 'success'}
-                      >
-                        {daysLeft <= 7 ? 'Due Soon' : daysLeft <= 30 ? 'Upcoming' : 'Active'}
+                      <Badge variant={getStatusBadgeVariant(daysLeft)}>
+                        {getStatusText(daysLeft)}
                       </Badge>
                     </td>
                   </tr>

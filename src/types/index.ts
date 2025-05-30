@@ -2,7 +2,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'staff' | 'member' | 'gym_owner';
+  role: 'admin' | 'staff' | 'member' | 'gym_owner' | 'trainer';
   avatar?: string;
 }
 
@@ -29,6 +29,20 @@ export interface Member {
   membershipId: string;
   joinDate: string;
   status: 'active' | 'inactive' | 'pending';
+  memberId: string; // Unique member ID for check-in
+}
+
+export interface Trainer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  avatar?: string;
+  specialization: string;
+  experience: string;
+  joinDate: string;
+  status: 'active' | 'inactive';
+  trainerId: string; // Unique trainer ID
 }
 
 export interface Membership {
@@ -48,6 +62,7 @@ export interface Attendance {
   checkIn: string;
   checkOut: string | null;
   duration?: number;
+  uniqueId: string; // Member's unique ID used for check-in
 }
 
 export interface DashboardSummary {

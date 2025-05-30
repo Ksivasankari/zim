@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, MoreHorizontal } from 'lucide-react';
-import { Member } from '../../types';
-import { members, memberships } from '../../data/mockData';
+import { Search, Filter, Edit, Trash2 } from 'lucide-react';
+import { Member, Trainer } from '../../types';
+import { members, trainers, memberships } from '../../data/mockData';
 import { formatDate } from '../../lib/utils';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
@@ -11,14 +11,29 @@ import Badge from '../ui/Badge';
 const MemberList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [showMembers, setShowMembers] = useState(true);
+  const [showTrainers, setShowTrainers] = useState(true);
   
   const filteredMembers = members.filter((member) => {
     const matchesSearch =
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.phone.includes(searchTerm);
+      member.phone.includes(searchTerm) ||
+      member.memberId.toLowerCase().includes(searchTerm.toLowerCase());
       
     const matchesStatus = statusFilter ? member.status === statusFilter : true;
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  const filteredTrainers = trainers.filter((trainer) => {
+    const matchesSearch =
+      trainer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      trainer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      trainer.phone.includes(searchTerm) ||
+      trainer.trainerId.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchesStatus = statusFilter ? trainer.status === statusFilter : true;
     
     return matchesSearch && matchesStatus;
   });
@@ -41,11 +56,16 @@ const MemberList: React.FC = () => {
     }
   };
 
+  const handleDelete = (type: 'member' | 'trainer', id: string) => {
+    // In a real app, this would call an API
+    console.log(`Delete ${type} with ID:`, id);
+  };
+
   return (
     <div className="space-y-4 animate-enter">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <Input
-          placeholder="Search members..."
+          placeholder="Search by name, email, phone or ID..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           leftIcon={<Search size={18} />}
@@ -53,92 +73,192 @@ const MemberList: React.FC = () => {
         />
         
         <div className="flex items-center space-x-2">
-          <div className="relative">
-            <Button
-              variant="outline"
-              leftIcon={<Filter size={16} />}
-              onClick={() => setStatusFilter(null)}
-            >
-              {statusFilter ? statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1) : 'All Statuses'}
-            </Button>
-          </div>
-
-          <Link to="/members/new">
-            <Button variant="primary">Add Member</Button>
-          </Link>
+          <Button
+            variant={showMembers ? 'primary' : 'outline'}
+            onClick={() => setShowMembers(!showMembers)}
+          >
+            Members
+          </Button>
+          <Button
+            variant={showTrainers ? 'primary' : 'outline'}
+            onClick={() => setShowTrainers(!showTrainers)}
+          >
+            Trainers
+          </Button>
         </div>
       </div>
-      
-      <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-        <table className="min-w-full divide-y divide-gray-300">
-          <thead className="bg-gray-50">
-            <tr>
-              <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                Member
-              </th>
-              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                Membership
-              </th>
-              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                Join Date
-              </th>
-              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                Status
-              </th>
-              <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                <span className="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {filteredMembers.map((member) => (
-              <tr key={member.id} className="hover:bg-gray-50">
-                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                  <div className="flex items-center">
-                    <div className="h-10 w-10 flex-shrink-0">
-                      <img
-                        className="h-10 w-10 rounded-full"
-                        src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=0EA5E9&color=fff`}
-                        alt={member.name}
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="font-medium text-gray-900">{member.name}</div>
-                      <div className="text-gray-500">{member.email}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  {getMembershipName(member.membershipId)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  {formatDate(member.joinDate)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm">
-                  <Badge
-                    variant={getStatusBadgeVariant(member.status)}
-                  >
-                    {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
-                  </Badge>
-                </td>
-                <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                  <Link to={`/members/${member.id}`} className="text-primary-600 hover:text-primary-900">
-                    View<span className="sr-only">, {member.name}</span>
-                  </Link>
-                </td>
-              </tr>
-            ))}
-            
-            {filteredMembers.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-10 text-center text-sm text-gray-500">
-                  No members found matching your search criteria.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+
+      {showMembers && (
+        <div className="bg-white shadow rounded-lg border border-gray-200 mb-8">
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="text-lg font-semibold">Members List</h2>
+            <Link to="/members/new">
+              <Button variant="primary">Add Member</Button>
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Member ID
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Member
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Membership
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Join Date
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredMembers.map((member) => (
+                  <tr key={member.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {member.memberId}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="h-10 w-10 flex-shrink-0">
+                          <img
+                            className="h-10 w-10 rounded-full"
+                            src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=0EA5E9&color=fff`}
+                            alt={member.name}
+                          />
+                        </div>
+                        <div className="ml-4">
+                          <div className="font-medium text-gray-900">{member.name}</div>
+                          <div className="text-gray-500">{member.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {getMembershipName(member.membershipId)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(member.joinDate)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Badge variant={getStatusBadgeVariant(member.status)}>
+                        {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end space-x-2">
+                        <Link to={`/members/${member.id}`}>
+                          <Button variant="outline" size="sm">View</Button>
+                        </Link>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDelete('member', member.id)}
+                        >
+                          <Trash2 size={16} className="text-red-500" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {showTrainers && (
+        <div className="bg-white shadow rounded-lg border border-gray-200">
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="text-lg font-semibold">Trainers List</h2>
+            <Link to="/trainers/new">
+              <Button variant="primary">Add Trainer</Button>
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Trainer ID
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Trainer
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Specialization
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Experience
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredTrainers.map((trainer) => (
+                  <tr key={trainer.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {trainer.trainerId}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="h-10 w-10 flex-shrink-0">
+                          <img
+                            className="h-10 w-10 rounded-full"
+                            src={trainer.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(trainer.name)}&background=0EA5E9&color=fff`}
+                            alt={trainer.name}
+                          />
+                        </div>
+                        <div className="ml-4">
+                          <div className="font-medium text-gray-900">{trainer.name}</div>
+                          <div className="text-gray-500">{trainer.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {trainer.specialization}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {trainer.experience}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Badge variant={getStatusBadgeVariant(trainer.status)}>
+                        {trainer.status.charAt(0).toUpperCase() + trainer.status.slice(1)}
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end space-x-2">
+                        <Link to={`/trainers/${trainer.id}`}>
+                          <Button variant="outline" size="sm">View</Button>
+                        </Link>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDelete('trainer', trainer.id)}
+                        >
+                          <Trash2 size={16} className="text-red-500" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

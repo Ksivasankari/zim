@@ -1,11 +1,11 @@
-import { Member, Membership, Attendance, DashboardSummary } from '../types';
+import { Member, Membership, Attendance, DashboardSummary, Trainer } from '../types';
 import { addDays, subDays, subMonths, format } from 'date-fns';
 
 export const memberships: Membership[] = [
   {
     id: '1',
     name: 'Basic',
-    duration: 30, // days
+    duration: 30,
     price: 49.99,
     description: 'Access to basic facilities and classes',
     features: ['Gym access', 'Basic equipment', '2 classes per week'],
@@ -58,6 +58,42 @@ export const memberships: Membership[] = [
   },
 ];
 
+export const trainers: Trainer[] = [
+  {
+    id: '1',
+    name: 'Alex Thompson',
+    email: 'alex@example.com',
+    phone: '(555) 111-2233',
+    specialization: 'Strength Training',
+    experience: '5 years',
+    joinDate: subMonths(new Date(), 2).toISOString(),
+    status: 'active',
+    trainerId: 'TR001'
+  },
+  {
+    id: '2',
+    name: 'Sarah Martinez',
+    email: 'sarah.m@example.com',
+    phone: '(555) 444-5566',
+    specialization: 'Yoga & Pilates',
+    experience: '7 years',
+    joinDate: subMonths(new Date(), 8).toISOString(),
+    status: 'active',
+    trainerId: 'TR002'
+  },
+  {
+    id: '3',
+    name: 'David Kim',
+    email: 'david.k@example.com',
+    phone: '(555) 777-8899',
+    specialization: 'CrossFit',
+    experience: '4 years',
+    joinDate: subMonths(new Date(), 1).toISOString(),
+    status: 'active',
+    trainerId: 'TR003'
+  }
+];
+
 export const members: Member[] = [
   {
     id: '1',
@@ -67,6 +103,7 @@ export const members: Member[] = [
     membershipId: '3',
     joinDate: subMonths(new Date(), 6).toISOString(),
     status: 'active',
+    memberId: 'MEM001'
   },
   {
     id: '2',
@@ -76,6 +113,7 @@ export const members: Member[] = [
     membershipId: '2',
     joinDate: subMonths(new Date(), 2).toISOString(),
     status: 'active',
+    memberId: 'MEM002'
   },
   {
     id: '3',
@@ -85,6 +123,7 @@ export const members: Member[] = [
     membershipId: '4',
     joinDate: subMonths(new Date(), 10).toISOString(),
     status: 'active',
+    memberId: 'MEM003'
   },
   {
     id: '4',
@@ -94,6 +133,7 @@ export const members: Member[] = [
     membershipId: '1',
     joinDate: subDays(new Date(), 5).toISOString(),
     status: 'pending',
+    memberId: 'MEM004'
   },
   {
     id: '5',
@@ -103,6 +143,7 @@ export const members: Member[] = [
     membershipId: '2',
     joinDate: subMonths(new Date(), 1).toISOString(),
     status: 'active',
+    memberId: 'MEM005'
   },
   {
     id: '6',
@@ -112,6 +153,7 @@ export const members: Member[] = [
     membershipId: '1',
     joinDate: subDays(new Date(), 20).toISOString(),
     status: 'inactive',
+    memberId: 'MEM006'
   },
 ];
 
@@ -123,6 +165,7 @@ export const todayAttendance: Attendance[] = [
     checkIn: subHours(new Date(), 3).toISOString(),
     checkOut: subHours(new Date(), 1).toISOString(),
     duration: 120,
+    uniqueId: 'MEM001'
   },
   {
     id: '2',
@@ -130,6 +173,7 @@ export const todayAttendance: Attendance[] = [
     memberName: 'James Rodriguez',
     checkIn: subHours(new Date(), 2).toISOString(),
     checkOut: null,
+    uniqueId: 'MEM002'
   },
   {
     id: '3',
@@ -138,6 +182,7 @@ export const todayAttendance: Attendance[] = [
     checkIn: subHours(new Date(), 4).toISOString(),
     checkOut: subHours(new Date(), 2).toISOString(),
     duration: 120,
+    uniqueId: 'MEM005'
   },
 ];
 
@@ -150,6 +195,7 @@ export const recentAttendance: Attendance[] = [
     checkIn: subDays(new Date(), 1).toISOString(),
     checkOut: subDays(addHours(new Date(), -1), 1).toISOString(),
     duration: 90,
+    uniqueId: 'MEM003'
   },
   {
     id: '5',
@@ -158,6 +204,7 @@ export const recentAttendance: Attendance[] = [
     checkIn: subDays(new Date(), 2).toISOString(),
     checkOut: subDays(addHours(new Date(), -1.5), 2).toISOString(),
     duration: 90,
+    uniqueId: 'MEM001'
   },
 ];
 
